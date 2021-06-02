@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 
 [System.Serializable]
 public class Collection
@@ -10,6 +11,12 @@ public class Collection
     public string previewImage;
     public string backgroundImage;
     public string collectionIcon;
+}
+
+[System.Serializable]
+public class CollectionList
+{
+    public List<Collection> collections = new List<Collection>();
 }
 
 [System.Serializable]

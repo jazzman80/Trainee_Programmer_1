@@ -6,7 +6,8 @@ using TMPro;
 public class NetManager : MonoBehaviour
 {
     private SignInResponse signInResponse;
-    
+    public List<Collection> collectionList = new List<Collection>();
+
     [SerializeField] private UIManager uIManager;
     [SerializeField] private TextMeshProUGUI usernameInput;
     [SerializeField] private TextMeshProUGUI passwordInput;
@@ -24,9 +25,11 @@ public class NetManager : MonoBehaviour
 
         yield return www.SendWebRequest();
 
-        Debug.Log(www.downloadHandler.text);
+        collectionList = JsonUtility.FromJson<CollectionList>("{ \"collections\": " + www.downloadHandler.text + "}").collections;
+        uIManager.ActivateCollectionsScreen();
+        //Debug.Log(collectionList[0].name);
     }
-    
+
     private IEnumerator SignIn()
     {
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
@@ -45,6 +48,5 @@ public class NetManager : MonoBehaviour
 
         StartCoroutine(GetCollectionList());
 
-        uIManager.ActivateCollectionsScreen();
     }
 }
