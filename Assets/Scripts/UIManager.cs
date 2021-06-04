@@ -14,11 +14,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject signInScreen;
     [SerializeField] private GameObject signUpScreen;
     [SerializeField] private GameObject collectionListScreen;
-    [SerializeField] private GameObject collectionsPanel;
+    [SerializeField] private Transform collectionsPanel;
 
     [Header("Prefabs")]
 
-    [SerializeField] private GameObject collectionPrefab;
+    [SerializeField] private CollectionElement collectionPrefab;
 
     public void ActivateSignInScreen()
     {
@@ -36,8 +36,7 @@ public class UIManager : MonoBehaviour
     {
         for(int i = 0; i < netManager.collectionList.Count; i++)
         {
-            GameObject newCollection = Instantiate(collectionPrefab, collectionsPanel.transform);
-            CollectionElement collectionElement = newCollection.GetComponent<CollectionElement>();
+            CollectionElement collectionElement = Instantiate(collectionPrefab, collectionsPanel);
             collectionElement.collectionName = netManager.collectionList[i].name;
             collectionElement.backgroundImagePath = netManager.collectionList[i].backgroundImage;
             collectionElement.collectionImagePath = netManager.collectionList[i].previewImage;

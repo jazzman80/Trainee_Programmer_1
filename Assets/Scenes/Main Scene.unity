@@ -1063,12 +1063,12 @@ GameObject:
   - component: {fileID: 230684520}
   - component: {fileID: 230684519}
   m_Layer: 5
-  m_Name: Invalid Password Text
+  m_Name: Error Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &230684518
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1095,7 +1095,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230684517}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -1517,8 +1517,8 @@ MonoBehaviour:
   signInScreen: {fileID: 1529706887}
   signUpScreen: {fileID: 615485922}
   collectionListScreen: {fileID: 1187064450}
-  collectionsPanel: {fileID: 1992612881}
-  collectionPrefab: {fileID: 3932540607366285908, guid: bdbdc5ad95b3ada4a9299cb68c692b39, type: 3}
+  collectionsPanel: {fileID: 1992612882}
+  collectionPrefab: {fileID: 2343336200363305764, guid: bdbdc5ad95b3ada4a9299cb68c692b39, type: 3}
 --- !u!1 &395926884
 GameObject:
   m_ObjectHideFlags: 0
@@ -2000,6 +2000,7 @@ MonoBehaviour:
   uIManager: {fileID: 377814265}
   usernameInput: {fileID: 123502534}
   passwordInput: {fileID: 1114040582}
+  errorText: {fileID: 230684519}
 --- !u!1 &633987594
 GameObject:
   m_ObjectHideFlags: 0
