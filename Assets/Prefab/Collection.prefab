@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -50, y: 50}
   m_SizeDelta: {x: 256, y: 250}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &7421256784562608712
@@ -221,6 +221,7 @@ GameObject:
   - component: {fileID: 3932540607366285915}
   - component: {fileID: 3932540607366285914}
   - component: {fileID: 2343336200363305764}
+  - component: {fileID: 8308741334195578018}
   m_Layer: 5
   m_Name: Collection
   m_TagString: Untagged
@@ -305,3 +306,17 @@ MonoBehaviour:
   collectionCaption: {fileID: 3932540606344267900}
   backgroundImage: {fileID: 3932540607366285914}
   collectionImage: {fileID: 6988716728954039932}
+--- !u!114 &8308741334195578018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3932540607366285908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 1
+  m_AspectRatio: 1.6

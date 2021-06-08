@@ -7,18 +7,13 @@ public class UIManager : MonoBehaviour
 
     [Header("System")]
 
-    [SerializeField] private NetManager netManager;
+    [SerializeField] private Spawner spawner;
 
     [Header("Application Screens")]
 
     [SerializeField] private GameObject signInScreen;
     [SerializeField] private GameObject signUpScreen;
     [SerializeField] private GameObject collectionListScreen;
-    [SerializeField] private Transform collectionsPanel;
-
-    [Header("Prefabs")]
-
-    [SerializeField] private CollectionElement collectionPrefab;
 
     public void ActivateSignInScreen()
     {
@@ -34,13 +29,7 @@ public class UIManager : MonoBehaviour
 
     public void ActivateCollectionsScreen()
     {
-        for(int i = 0; i < netManager.collectionList.Count; i++)
-        {
-            CollectionElement collectionElement = Instantiate(collectionPrefab, collectionsPanel);
-            collectionElement.collectionName = netManager.collectionList[i].name;
-            collectionElement.backgroundImagePath = netManager.collectionList[i].backgroundImage;
-            collectionElement.collectionImagePath = netManager.collectionList[i].previewImage;
-        }
+        spawner.LoadCollections();
         
         signInScreen.SetActive(false);
         signUpScreen.SetActive(false);
