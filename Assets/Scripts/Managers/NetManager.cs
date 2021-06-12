@@ -6,16 +6,30 @@ using TMPro;
 using Newtonsoft.Json;
 public class NetManager : MonoBehaviour
 {
-    private const string loginAdress = "https://test.loy.am/oauth/token";
-    private const string collectionListAdress = "https://test.loy.am/api/sets";
-    private const string registrateAdress = "https://test.loy.am/api/users";
+    private const string loginAddress = "https://test.loy.am/oauth/token";
+    private const string collectionListAddress = "https://test.loy.am/api/sets";
+    private const string registrateAddress = "https://test.loy.am/api/users";
+    private const string refreshAddress = "https://test.loy.am/oauth/token";
     private const string clientSecret = "0IcbmorPNeuEcywxvaGQzznSd3pIl8BF12hT8eeExuZ2G9XYJH7YHeQh";
 
     private SignInResponse signInResponse;
+    private string accessToken;
+    private string refreshToken;
+
     public List<Collection> collectionList = new List<Collection>();
 
     [Header("System Components")]
     [SerializeField] private UIManager uIManager;
+
+    private void Start()
+    {
+        if (!PlayerPrefs.HasKey("AccessToken")) uIManager.ActivateSignInScreen();
+        else
+        {
+            LoadTokens();
+            StartCoroutine(RefreshToken());
+        }
+    }
 
     public void OnSignInButtonClick()
     {
@@ -27,10 +41,23 @@ public class NetManager : MonoBehaviour
         if (!uIManager.signUpScreen.CheckError()) StartCoroutine(Registrate());
     }
 
+    private void SaveTokens()
+    {
+        PlayerPrefs.SetString("AccessToken", accessToken);
+        PlayerPrefs.SetString("RefreshToken", refreshToken);
+        PlayerPrefs.Save();
+    }
+
+    private void LoadTokens()
+    {
+        accessToken = PlayerPrefs.GetString("AccessToken");
+        refreshToken = PlayerPrefs.GetString("RefreshToken");
+    }
+
     private IEnumerator GetCollectionList()
     {
-        UnityWebRequest www = UnityWebRequest.Get(collectionListAdress);
-        www.SetRequestHeader("Authorization", "Bearer " + signInResponse.access_token);
+        UnityWebRequest www = UnityWebRequest.Get(collectionListAddress);
+        www.SetRequestHeader("Authorization", "Bearer " + accessToken);
         www.SetRequestHeader("Accept", "application/json");
 
         yield return www.SendWebRequest();
@@ -48,7 +75,7 @@ public class NetManager : MonoBehaviour
         formData.Add(new MultipartFormDataSection("username", uIManager.signInScreen.username.text));
         formData.Add(new MultipartFormDataSection("password", uIManager.signInScreen.password.text));
 
-        UnityWebRequest www = UnityWebRequest.Post(loginAdress, formData);
+        UnityWebRequest www = UnityWebRequest.Post(loginAddress, formData);
         
         yield return www.SendWebRequest();
 
@@ -59,6 +86,11 @@ public class NetManager : MonoBehaviour
         else
         {
             signInResponse = JsonConvert.DeserializeObject<SignInResponse>(www.downloadHandler.text);
+
+            accessToken = signInResponse.access_token;
+            refreshToken = signInResponse.refresh_token;
+            SaveTokens();
+
             StartCoroutine(GetCollectionList());
         }
 
@@ -73,7 +105,7 @@ public class NetManager : MonoBehaviour
         formData.Add(new MultipartFormDataSection("password", uIManager.signUpScreen.password.text));
         formData.Add(new MultipartFormDataSection("email", uIManager.signUpScreen.email.text));
 
-        UnityWebRequest www = UnityWebRequest.Post(registrateAdress, formData);
+        UnityWebRequest www = UnityWebRequest.Post(registrateAddress, formData);
 
         www.SetRequestHeader("Accept", "application/json");
 
@@ -85,6 +117,34 @@ public class NetManager : MonoBehaviour
             else uIManager.errorScreen.Alert(www.error);
         }
         else uIManager.SuccessRegistration();
+
+    }
+
+    private IEnumerator RefreshToken()
+    {
+        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+        formData.Add(new MultipartFormDataSection("grant_type", "refresh_token"));
+        formData.Add(new MultipartFormDataSection("client_id", "loyam_test"));
+        formData.Add(new MultipartFormDataSection("client_secret", clientSecret));
+        formData.Add(new MultipartFormDataSection("refresh_token", refreshToken));
+
+        UnityWebRequest www = UnityWebRequest.Post(refreshAddress, formData);
+
+        www.SetRequestHeader("Accept", "application/json");
+
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            signInResponse = JsonConvert.DeserializeObject<SignInResponse>(www.downloadHandler.text);
+
+            accessToken = signInResponse.access_token;
+            refreshToken = signInResponse.refresh_token;
+            SaveTokens();
+
+            StartCoroutine(GetCollectionList());
+        }
+        else uIManager.ActivateSignInScreen();
 
     }
 }

@@ -5,17 +5,13 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-
-    [Header("System")]
-
-    [SerializeField] private Spawner spawner;
-
     [Header("Screens")]
 
     public SignInScreen signInScreen;
     public SignUpScreen signUpScreen;
     public ErrorScreen errorScreen;
     public CollectionListScreen collectionListScreen;
+    public CollectionScreen collectionScreen;
 
     [Header("Sign Up Screen")]
     [SerializeField] private TextMeshProUGUI signUpError;
@@ -26,6 +22,7 @@ public class UIManager : MonoBehaviour
         signInScreen.HideScreen();
         errorScreen.HideScreen();
         collectionListScreen.HideScreen();
+        collectionScreen.HideScreen();
     }
 
     public void SuccessRegistration()
@@ -51,10 +48,16 @@ public class UIManager : MonoBehaviour
 
     public void ActivateCollectionsScreen()
     {
-        spawner.LoadCollections();
-
         HideAllScreens();
+        if(!collectionListScreen.isCollectionsLoaded) collectionListScreen.ShowCollections();
         collectionListScreen.ShowScreen();
+    }
+
+    public void ActivateCollectionScreen()
+    {
+        HideAllScreens();
+        collectionScreen.ShowCollectionElements();
+        collectionScreen.ShowScreen();
     }
 
 }
