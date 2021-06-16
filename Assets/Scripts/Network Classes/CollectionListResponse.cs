@@ -1,5 +1,5 @@
 [System.Serializable]
-public class Collection
+public class CollectionListResponse
 {
     public int id;
     public string name;

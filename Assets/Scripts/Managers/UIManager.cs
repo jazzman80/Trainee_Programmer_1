@@ -12,9 +12,12 @@ public class UIManager : MonoBehaviour
     public ErrorScreen errorScreen;
     public CollectionListScreen collectionListScreen;
     public CollectionScreen collectionScreen;
+    public ElementScreen elementScreen;
 
-    [Header("Sign Up Screen")]
-    [SerializeField] private TextMeshProUGUI signUpError;
+    [Header("Vars")]
+    public List<CollectionView> collectionViews = new List<CollectionView>();
+    public List<CollectionScreen> collectionScreens = new List<CollectionScreen>();
+    public int collectionIndex;
 
     private void HideAllScreens()
     {
@@ -23,6 +26,16 @@ public class UIManager : MonoBehaviour
         errorScreen.HideScreen();
         collectionListScreen.HideScreen();
         collectionScreen.HideScreen();
+        elementScreen.HideScreen();
+    }
+
+    public void ClearCollectionScreen()
+    {
+        for(int i = 0; i < collectionScreen.collectionElementViews.Count; i++)
+        {
+            Destroy(collectionScreen.collectionElementViews[i]);
+        }
+        collectionScreen.collectionElementViews.Clear();
     }
 
     public void SuccessRegistration()
@@ -46,18 +59,25 @@ public class UIManager : MonoBehaviour
         signUpScreen.ShowScreen();
     }
 
-    public void ActivateCollectionsScreen()
+    public void ActivateCollectionListScreen()
     {
         HideAllScreens();
-        if(!collectionListScreen.isCollectionsLoaded) collectionListScreen.ShowCollections();
+        ClearCollectionScreen();
         collectionListScreen.ShowScreen();
     }
 
     public void ActivateCollectionScreen()
     {
         HideAllScreens();
-        collectionScreen.ShowCollectionElements();
+
         collectionScreen.ShowScreen();
+    }
+
+    public void ActivateElementScreen()
+    {
+        HideAllScreens();
+
+        elementScreen.ShowScreen();
     }
 
 }

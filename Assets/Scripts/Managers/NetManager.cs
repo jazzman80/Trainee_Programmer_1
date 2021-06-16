@@ -10,16 +10,23 @@ public class NetManager : MonoBehaviour
     private const string collectionListAddress = "https://test.loy.am/api/sets";
     private const string registrateAddress = "https://test.loy.am/api/users";
     private const string refreshAddress = "https://test.loy.am/oauth/token";
+    private const string collectionElementsAddress = "https://test.loy.am/api/subjects";
+    private const string favoriteElementAddressStart = "https://test.loy.am/api/subjects/";
+    private const string favoriteElementAddressEnd = "/actions/favorite";
+    private const string unFavoriteElementAddressEnd = "/actions/unfavorite";
     private const string clientSecret = "0IcbmorPNeuEcywxvaGQzznSd3pIl8BF12hT8eeExuZ2G9XYJH7YHeQh";
 
     private SignInResponse signInResponse;
     private string accessToken;
     private string refreshToken;
 
-    public List<Collection> collectionList = new List<Collection>();
+    public List<CollectionListResponse> collectionList = new List<CollectionListResponse>();
+    public List<CollectionElementResponse> elementsList = new List<CollectionElementResponse>();
 
     [Header("System Components")]
     [SerializeField] private UIManager uIManager;
+    [SerializeField] private Database database;
+    [SerializeField] private SpawnManager spawnManager;
 
     private void Start()
     {
@@ -62,8 +69,9 @@ public class NetManager : MonoBehaviour
 
         yield return www.SendWebRequest();
 
-        collectionList = JsonConvert.DeserializeObject<List<Collection>>(www.downloadHandler.text);
-        uIManager.ActivateCollectionsScreen();
+        collectionList = JsonConvert.DeserializeObject<List<CollectionListResponse>>(www.downloadHandler.text);
+
+        StartCoroutine(GetCollectionElements());
     }
 
     private IEnumerator SignIn()
@@ -120,6 +128,21 @@ public class NetManager : MonoBehaviour
 
     }
 
+    private IEnumerator GetCollectionElements()
+    {
+        UnityWebRequest www = UnityWebRequest.Get(collectionElementsAddress);
+        www.SetRequestHeader("Authorization", "Bearer " + accessToken);
+        www.SetRequestHeader("Accept", "application/json");
+
+        yield return www.SendWebRequest();
+
+        elementsList = JsonConvert.DeserializeObject<List<CollectionElementResponse>>(www.downloadHandler.text);
+
+        database.BuildDatabase(collectionList, elementsList);
+        spawnManager.BuildCollectionListScreen();
+        uIManager.ActivateCollectionListScreen();
+    }
+
     private IEnumerator RefreshToken()
     {
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
@@ -147,4 +170,41 @@ public class NetManager : MonoBehaviour
         else uIManager.ActivateSignInScreen();
 
     }
+
+    private IEnumerator FavCollectionElement(int elementIndex)
+    {
+        byte[] bodyData = null;
+        UnityWebRequest www = UnityWebRequest.Put(favoriteElementAddressStart + elementIndex.ToString() + favoriteElementAddressEnd, bodyData);
+        www.SetRequestHeader("Authorization", "Bearer " + accessToken);
+        www.SetRequestHeader("Accept", "application/json");
+
+        yield return www.SendWebRequest();
+    }
+
+    public void FavoriteElement(int _elementIndex)
+    {
+        StartCoroutine(FavCollectionElement(_elementIndex));
+    }
+
+    private IEnumerator UnFavCollectionElement(int elementIndex)
+    {
+        byte[] bodyData = null;
+        UnityWebRequest www = UnityWebRequest.Put(favoriteElementAddressStart + elementIndex.ToString() + unFavoriteElementAddressEnd, bodyData);
+        www.SetRequestHeader("Authorization", "Bearer " + accessToken);
+        www.SetRequestHeader("Accept", "application/json");
+
+        yield return www.SendWebRequest();
+    }
+
+    public void UnFavoriteElement(int _elementIndex)
+    {
+        StartCoroutine(UnFavCollectionElement(_elementIndex));
+    }
+
+    //avoid "put request with empty body" error 
+    public static UnityWebRequest Put(string uri, byte[] bodyData)
+    {
+        return new UnityWebRequest(uri, "PUT", (DownloadHandler)new DownloadHandlerBuffer(), bodyData == null || bodyData.Length == 0 ? null : (UploadHandler)new UploadHandlerRaw(bodyData));
+    }
+
 }
